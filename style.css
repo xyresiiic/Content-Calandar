@@ -317,7 +317,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);trans
 }
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--acc);}
 .field textarea{min-height:68px;resize:vertical;line-height:1.5;}
-.field select option{background:#18181f;}
+.field select option{background:var(--sur2);color:var(--tx);}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr);}
 .m-btn-del{

@@ -240,7 +240,7 @@ function buildCalendarHTML(){
     const isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d;
     const isSun=new Date(y,m,d).getDay()===0;
     let pills=dayPosts.slice(0,2).map((p,i)=>`
-      <span class="post-pill" style="background:${typeColor(p.type)}22;color:${typeColor(p.type)};"
+      <span class="post-pill" style="background:${typeColor(p.type)}12;color:${typeColor(p.type)};"
         data-key="${key}" data-idx="${i}">${p.title||p.type||'Post'}</span>`).join('');
     if(dayPosts.length>2) pills+=`<span class="more-pill">+${dayPosts.length-2} more</span>`;
     calHTML+=`<div class="cal-cell${isToday?' today':''}${isSun?' sunday':''}" data-key="${key}" data-day="${d}">
@@ -624,7 +624,7 @@ function showToast(msg){
     t=document.createElement('div');t.id='toast';
     t.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--sur3);color:var(--tx);'+
       'padding:10px 18px;border-radius:10px;font-size:13px;z-index:999;border:1px solid var(--bdr2);'+
-      'transition:opacity .3s;box-shadow:0 4px 20px rgba(0,0,0,.3);';
+      'transition:opacity .3s;box-shadow:0 4px 20px rgba(0,0,0,.3);font-family:var(--font);';
     document.body.appendChild(t);
   }
   t.textContent=msg; t.style.opacity='1';

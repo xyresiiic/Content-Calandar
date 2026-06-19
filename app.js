@@ -573,5 +573,15 @@ function showToast(msg){
   t._to=setTimeout(()=>t.style.opacity='0',2200);
 }
 
+/* ════ SIDEBAR ══════════════════════════════════ */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+}
+
 /* ════ START ════════════════════════════════════ */
 init();

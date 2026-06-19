@@ -187,7 +187,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);trans
 .stat-card:nth-child(4)::before{background:var(--yel);}
 .stat-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--tx);line-height:1;}
 .stat-lbl{font-size:12px;font-weight:500;color:var(--tx2);}
-.stat-bg-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.08;}
+.stat-bg-icon {
+  position: absolute;
+  right: 12px; bottom: 10px;
+  width: 36px; height: 36px;
+  opacity: 0.07;
+  color: var(--tx);
+  pointer-events: none;
+}
 
 /* ─── CALENDAR ────────────────────────────── */
 .cal-section{}
@@ -206,7 +213,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);trans
 .cal-cell.today{border-color:var(--acc);background:var(--accbg);}
 .cal-cell.today::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--acc);}
 .cal-cell.empty{background:none;border-color:transparent;cursor:default;}
-.cal-cell.sunday .cell-dn{color:#f07ab0;}
+.cal-cell.sunday .cell-dn{color:var(--acc);opacity:0.7;}
 .cell-dn{
   font-family:'Syne',sans-serif;font-size:13px;font-weight:600;
   color:var(--tx3);

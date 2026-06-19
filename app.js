@@ -143,6 +143,41 @@ function renderContent(){
   else if(currentView==='list') el.innerHTML=buildListHTML();
   else el.innerHTML=buildAnalyticsHTML();
   attachCalendarEvents();
+
+  if (currentView === 'analytics') {
+    requestAnimationFrame(() => {
+      const canvas = document.getElementById('type-chart');
+      if (!canvas || !window.Chart) return;
+      if (canvas._chartInst) canvas._chartInst.destroy();
+      const bt = { Reel:'#f07ab0', Carousel:'#f0a830', Static:'#7c6fff', Story:'#2fdba0', Collab:'#f06040' };
+      const entries = Object.entries(bt);
+      canvas._chartInst = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: entries.map(([t])=>t),
+          datasets: [{
+            data: entries.map(([t]) => {
+              const y = currentDate.getFullYear(), m = currentDate.getMonth();
+              let cnt = 0;
+              for (let d=1;d<=31;d++) {
+                (db.posts[postKeyFor(db.activeClient,y,m,d)]||[]).forEach(p=>{ if(p.type===t) cnt++; });
+              }
+              return cnt;
+            }),
+            backgroundColor: entries.map(([t])=>bt[t]+'44'),
+            borderColor: entries.map(([t])=>bt[t]),
+            borderWidth: 1.5,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '68%',
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.parsed}`
+          }}}
+        }
+      });
+    });
+  }
 }
 
 /* ════ STATS ════════════════════════════════════ */
@@ -176,11 +211,23 @@ function buildCalendarHTML(){
   const s=getMonthStats();
 
   let statsHTML=`<div class="stats-grid">
-    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><div class="stat-bg-icon">📋</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><div class="stat-bg-icon">✅</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><div class="stat-bg-icon">🎬</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><div class="stat-bg-icon">🎠</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="8" y="2" width="8" height="4" rx="1.5" ry="1.5"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M9 12h6M9 16h4"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h4M18 9h4M2 15h4M18 15h4"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 12l10 5 10-5M2 17l10 5 10-5M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
   </div>`;
+
+  const legendHTML = `
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+      padding:8px 14px;background:var(--sur);border:1px solid var(--bdr);
+      border-radius:10px;margin-bottom:14px;font-size:11px;color:var(--tx2);">
+      ${Object.entries({Reel:'#f07ab0',Carousel:'#f0a830',Static:'#7c6fff',Story:'#2fdba0',Collab:'#f06040'})
+        .map(([t,c])=>`
+          <span style="display:flex;align-items:center;gap:5px;">
+            <span style="width:8px;height:8px;border-radius:2px;background:${c};flex-shrink:0;"></span>
+            ${t}
+          </span>`).join('')}
+    </div>`;
 
   let calHTML=`<div class="cal-section"><div class="day-labels">
     ${['SUN','MON','TUE','WED','THU','FRI','SAT'].map(d=>`<div class="day-lbl">${d}</div>`).join('')}
@@ -202,7 +249,7 @@ function buildCalendarHTML(){
     </div>`;
   }
   calHTML+=`</div></div>`;
-  return statsHTML+calHTML;
+  return statsHTML + legendHTML + calHTML;
 }
 
 function typeColor(type){
@@ -272,10 +319,10 @@ function buildListHTML(){
 
   const s=getMonthStats();
   const stats=`<div class="stats-grid" style="margin-bottom:16px;">
-    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="8" y="2" width="8" height="4" rx="1.5" ry="1.5"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M9 12h6M9 16h4"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h4M18 9h4M2 15h4M18 15h4"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 12l10 5 10-5M2 17l10 5 10-5M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
   </div>`;
 
   return stats+chips+`<div class="task-list">${rows}</div>`;
@@ -347,7 +394,19 @@ function buildAnalyticsHTML(){
       </div>
     </div>
     <div class="a-card">
-      <div class="a-title">Posts by type</div>${typeRows}
+      <div class="a-title">Posts by type</div>
+      <div style="position:relative;width:100%;height:200px;margin-bottom:14px;">
+        <canvas id="type-chart" role="img" aria-label="Donut chart showing post count by type">
+          Reel: ${byType.Reel}, Carousel: ${byType.Carousel}, Static: ${byType.Static},
+          Story: ${byType.Story}, Collab: ${byType.Collab}
+        </canvas>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--tx2);">
+        ${Object.entries(byType).map(([t,n])=>`
+          <span style="display:flex;align-items:center;gap:4px;">
+            <span style="width:9px;height:9px;border-radius:2px;background:${typeColor(t)};flex-shrink:0;"></span>${t} ${n}
+          </span>`).join('')}
+      </div>
     </div>
     <div class="a-card">
       <div class="a-title">Posts by week</div>${weekRows}

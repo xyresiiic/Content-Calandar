@@ -158,10 +158,12 @@ function getMonthStats(){
   return{total,posted,reels,carousels};
 }
 function postKeyFor(cid,y,m,d){ return cid+'_'+y+'-'+m+'-'+d; }
-function renderStats(){
-  const s=getMonthStats();
-  document.getElementById('content').querySelectorAll('.stat-num').forEach((el,i)=>{
-    el.textContent=[s.total,s.posted,s.reels,s.carousels][i];
+function renderStats() {
+  const s = getMonthStats();
+  const map = { 's-total': s.total, 's-posted': s.posted, 's-reels': s.reels, 's-carousels': s.carousels };
+  Object.entries(map).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
   });
 }
 
@@ -174,10 +176,10 @@ function buildCalendarHTML(){
   const s=getMonthStats();
 
   let statsHTML=`<div class="stats-grid">
-    <div class="stat-card"><div class="stat-num">${s.total}</div><div class="stat-lbl">Posts planned</div><div class="stat-bg-icon">📋</div></div>
-    <div class="stat-card"><div class="stat-num">${s.posted}</div><div class="stat-lbl">Posted</div><div class="stat-bg-icon">✅</div></div>
-    <div class="stat-card"><div class="stat-num">${s.reels}</div><div class="stat-lbl">Reels</div><div class="stat-bg-icon">🎬</div></div>
-    <div class="stat-card"><div class="stat-num">${s.carousels}</div><div class="stat-lbl">Carousels</div><div class="stat-bg-icon">🎠</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><div class="stat-bg-icon">📋</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><div class="stat-bg-icon">✅</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><div class="stat-bg-icon">🎬</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><div class="stat-bg-icon">🎠</div></div>
   </div>`;
 
   let calHTML=`<div class="cal-section"><div class="day-labels">
@@ -270,10 +272,10 @@ function buildListHTML(){
 
   const s=getMonthStats();
   const stats=`<div class="stats-grid" style="margin-bottom:16px;">
-    <div class="stat-card"><div class="stat-num">${s.total}</div><div class="stat-lbl">Posts planned</div></div>
-    <div class="stat-card"><div class="stat-num">${s.posted}</div><div class="stat-lbl">Posted</div></div>
-    <div class="stat-card"><div class="stat-num">${s.reels}</div><div class="stat-lbl">Reels</div></div>
-    <div class="stat-card"><div class="stat-num">${s.carousels}</div><div class="stat-lbl">Carousels</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div></div>
   </div>`;
 
   return stats+chips+`<div class="task-list">${rows}</div>`;

@@ -355,7 +355,7 @@ body{
 .act-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;
   padding:8px 18px;border-radius:8px;
-  background:var(--acc);color:#fff;border:none;
+  background:var(--acc);color:var(--acctx);border:none;
   font-size:12px;font-weight:600;cursor:pointer;
   font-family:var(--font);letter-spacing:.01em;
   transition:opacity .15s,transform .15s;

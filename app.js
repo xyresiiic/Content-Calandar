@@ -211,10 +211,10 @@ function buildCalendarHTML(){
   const s=getMonthStats();
 
   let statsHTML=`<div class="stats-grid">
-    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="8" y="2" width="8" height="4" rx="1.5" ry="1.5"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M9 12h6M9 16h4"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h4M18 9h4M2 15h4M18 15h4"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 12l10 5 10-5M2 17l10 5 10-5M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div></div>
   </div>`;
 
   const legendHTML = `
@@ -319,10 +319,10 @@ function buildListHTML(){
 
   const s=getMonthStats();
   const stats=`<div class="stats-grid" style="margin-bottom:16px;">
-    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="8" y="2" width="8" height="4" rx="1.5" ry="1.5"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M9 12h6M9 16h4"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h4M18 9h4M2 15h4M18 15h4"/></svg></div>
-    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div><svg class="stat-bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 12l10 5 10-5M2 17l10 5 10-5M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
+    <div class="stat-card"><div class="stat-num" id="s-total">${s.total}</div><div class="stat-lbl">Posts planned</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-posted">${s.posted}</div><div class="stat-lbl">Posted</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-reels">${s.reels}</div><div class="stat-lbl">Reels</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-carousels">${s.carousels}</div><div class="stat-lbl">Carousels</div></div>
   </div>`;
 
   return stats+chips+`<div class="task-list">${rows}</div>`;

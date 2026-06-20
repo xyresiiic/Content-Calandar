@@ -43,6 +43,7 @@ function postKey(date){ return db.activeClient+'_'+date; }
 let currentDate = new Date(2026,3,1);
 let currentView = 'calendar';
 let listFilter  = 'all';
+let listSearch  = '';
 let editingKey  = null;
 let editingIdx  = null;
 let confirmCb   = null;
@@ -55,8 +56,33 @@ function init(){
   renderClients();
   renderBadge();
   renderAll();
-}
 
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closePostModal();
+      closeConfirm();
+      closeClientModal();
+    }
+    if(e.key === 'n' || e.key === 'N'){
+      const anyOpen = document.querySelector('.overlay.open');
+      if(!anyOpen && document.activeElement.tagName !== 'INPUT'
+         && document.activeElement.tagName !== 'TEXTAREA'
+         && document.activeElement.tagName !== 'SELECT'){
+        openAddModal(null);
+      }
+    }
+  });
+
+  ['overlay-post','overlay-confirm','overlay-client'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e){
+      if(e.target === this){
+        if(id === 'overlay-post')    closePostModal();
+        if(id === 'overlay-confirm') closeConfirm();
+        if(id === 'overlay-client')  closeClientModal();
+      }
+    });
+  });
+}
 /* ════ THEMES ══════════════════════════════════ */
 function renderThemes(){
   document.getElementById('theme-row').innerHTML=THEMES.map(t=>`
@@ -129,6 +155,11 @@ function renderAll(){ renderMonthLabel(); renderContent(); renderStats(); }
 /* ════ MONTH ═══════════════════════════════════ */
 function changeMonth(d){
   currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()+d,1);
+  renderAll();
+}
+function goToToday(){
+  currentDate = new Date();
+  currentDate.setDate(1);
   renderAll();
 }
 function renderMonthLabel(){
@@ -241,7 +272,12 @@ function buildCalendarHTML(){
     const isSun=new Date(y,m,d).getDay()===0;
     let pills=dayPosts.slice(0,2).map((p,i)=>`
       <span class="post-pill" style="background:${typeColor(p.type)}12;color:${typeColor(p.type)};"
-        data-key="${key}" data-idx="${i}">${p.title||p.type||'Post'}</span>`).join('');
+        data-key="${key}" data-idx="${i}">
+        <span class="pill-inner">
+          ${p.title||p.type||'Post'}
+          <span class="pill-dot" style="background:${statusColor(p.status)};"></span>
+        </span>
+      </span>`).join('');
     if(dayPosts.length>2) pills+=`<span class="more-pill">+${dayPosts.length-2} more</span>`;
     calHTML+=`<div class="cal-cell${isToday?' today':''}${isSun?' sunday':''}" data-key="${key}" data-day="${d}">
       <div class="cell-dn">${d}${isToday?'<span class="today-chip">TODAY</span>':''}</div>
@@ -255,6 +291,16 @@ function buildCalendarHTML(){
 function typeColor(type){
   const map={Reel:'#f07ab0',Carousel:'#f0a830',Static:'#7c6fff',Story:'#2fdba0',Collab:'#f06040'};
   return map[type]||'#7c6fff';
+}
+function statusColor(status){
+  const map = {
+    'Idea':        'var(--tx3)',
+    'In progress': 'var(--yel)',
+    'Ready':       'var(--acc)',
+    'Scheduled':   'var(--grn)',
+    'Posted':      '#5ec870',
+  };
+  return map[status] || 'var(--tx3)';
 }
 
 function attachCalendarEvents(){
@@ -275,8 +321,24 @@ function attachCalendarEvents(){
 /* ════ LIST VIEW ═══════════════════════════════ */
 function buildListHTML(){
   const filters=['all','Idea','In progress','Ready','Scheduled','Posted'];
-  let chips=`<div class="list-filters">${filters.map(f=>`
-    <div class="lf-chip${listFilter===f?' active':''}" onclick="setListFilter('${f}')">${f==='all'?'All':f}</div>`).join('')}</div>`;
+  let chips=`
+    <div class="list-search-wrap">
+      <i class="ti ti-search list-search-icon" aria-hidden="true"></i>
+      <input
+        class="list-search-input"
+        id="list-search"
+        type="text"
+        placeholder="Search posts..."
+        value="${listSearch}"
+        oninput="setListSearch(this.value)"
+      />
+      ${listSearch ? `<button class="list-search-clear" onclick="setListSearch('')">
+        <i class="ti ti-x" aria-hidden="true"></i>
+      </button>` : ''}
+    </div>
+    <div class="list-filters">${filters.map(f=>`
+      <div class="lf-chip${listFilter===f?' active':''}" onclick="setListFilter('${f}')">${f==='all'?'All':f}</div>`).join('')}
+    </div>`;
 
   const allPosts=[];
   Object.entries(db.posts).forEach(([key,arr])=>{
@@ -287,7 +349,15 @@ function buildListHTML(){
     arr.forEach((p,i)=> allPosts.push({key,idx:i,post:p,date}));
   });
   allPosts.sort((a,b)=>a.date-b.date);
-  const filtered=listFilter==='all'?allPosts:allPosts.filter(x=>x.post.status===listFilter);
+  let filtered = listFilter==='all' ? allPosts : allPosts.filter(x=>x.post.status===listFilter);
+  if(listSearch.trim()){
+    const q = listSearch.toLowerCase();
+    filtered = filtered.filter(({post}) =>
+      (post.title||'').toLowerCase().includes(q) ||
+      (post.caption||'').toLowerCase().includes(q) ||
+      (post.hashtags||'').toLowerCase().includes(q)
+    );
+  }
 
   if(!filtered.length){
     return chips+`<div class="empty-msg"><h3>No posts yet</h3><p>Add posts from the calendar or click "+ Add Post".</p></div>`;
@@ -329,6 +399,14 @@ function buildListHTML(){
 }
 
 function setListFilter(f){ listFilter=f; renderContent(); }
+function setListSearch(val){
+  listSearch = val;
+  renderContent();
+  requestAnimationFrame(()=>{
+    const el = document.getElementById('list-search');
+    if(el){ el.focus(); el.setSelectionRange(val.length, val.length); }
+  });
+}
 function statusCls(s){
   if(!s||s==='Idea') return 's-idea';
   if(s==='In progress') return 's-wip';
@@ -354,6 +432,49 @@ function buildAnalyticsHTML(){
   }
   const pct=total?Math.round(posted/total*100):0;
 
+  const dlStrip=`<div class="dl-strip">
+    <div class="dl-text">
+      <h3>Export this month's plan</h3>
+      <p>Download as CSV or JSON for sharing or archiving.</p>
+    </div>
+    <div class="dl-btns">
+      <button class="dl-btn primary" onclick="downloadCSV()">&#8595; CSV</button>
+      <button class="dl-btn" onclick="downloadJSON()">&#8595; JSON</button>
+      <button class="dl-btn" onclick="window.print()">Print</button>
+    </div>
+  </div>`;
+
+  if(total === 0){
+    return `${dlStrip}
+    <div style="
+      display:flex;flex-direction:column;align-items:center;
+      justify-content:center;padding:64px 24px;
+      text-align:center;gap:12px;
+    ">
+      <div style="
+        width:52px;height:52px;border-radius:14px;
+        background:var(--sur2);border:1px solid var(--bdr);
+        display:flex;align-items:center;justify-content:center;
+        font-size:22px;margin-bottom:4px;
+      ">📅</div>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;
+        font-weight:600;color:var(--tx2);letter-spacing:-.01em;">
+        No posts this month
+      </div>
+      <div style="font-size:13px;color:var(--tx3);max-width:280px;line-height:1.6;">
+        Add posts to the calendar to see your analytics here.
+      </div>
+      <button onclick="switchView('calendar', document.querySelector('.v-tab'))"
+        style="margin-top:8px;padding:9px 20px;border-radius:8px;border:1px solid var(--bdr2);
+        background:none;color:var(--tx2);font-size:13px;font-weight:500;
+        cursor:pointer;font-family:var(--font);transition:all .15s;"
+        onmouseover="this.style.background='var(--sur2)';this.style.color='var(--tx)'"
+        onmouseout="this.style.background='none';this.style.color='var(--tx2)'">
+        Go to calendar
+      </button>
+    </div>`;
+  }
+
   const typeRows=Object.entries(byType).map(([t,n])=>`
     <div class="prog-row">
       <div class="prog-label"><span>${t}</span><span>${n}</span></div>
@@ -366,18 +487,6 @@ function buildAnalyticsHTML(){
       <div class="prog-label"><span>Week ${i+1}</span><span>${n}</span></div>
       <div class="prog-track"><div class="prog-fill" style="width:${Math.round(n/maxW*100)}%;background:var(--acc);"></div></div>
     </div>`).join('');
-
-  const dlStrip=`<div class="dl-strip">
-    <div class="dl-text">
-      <h3>Export this month's plan</h3>
-      <p>Download as CSV or JSON for sharing or archiving.</p>
-    </div>
-    <div class="dl-btns">
-      <button class="dl-btn primary" onclick="downloadCSV()">&#8595; CSV</button>
-      <button class="dl-btn" onclick="downloadJSON()">&#8595; JSON</button>
-      <button class="dl-btn" onclick="window.print()">Print</button>
-    </div>
-  </div>`;
 
   return `${dlStrip}<div class="analytics-grid">
     <div class="a-card">
@@ -434,6 +543,7 @@ function openDayModal(key,day){
   setDateInput(key);
   clearForm();
   document.getElementById('btn-del-post').style.display='none';
+  document.getElementById('btn-dupe-post').style.display='none';
   document.getElementById('btn-save-post').textContent='Add Post';
   renderDayPosts(key);
   openOverlay('overlay-post');
@@ -446,6 +556,7 @@ function openAddModal(key){
   if(key) setDateInput(key); else document.getElementById('f-date').value='';
   clearForm();
   document.getElementById('btn-del-post').style.display='none';
+  document.getElementById('btn-dupe-post').style.display='none';
   document.getElementById('btn-save-post').textContent='Add Post';
   document.getElementById('day-posts-list').innerHTML='';
   openOverlay('overlay-post');
@@ -466,9 +577,35 @@ function openEditModal(key,idx){
   document.getElementById('f-hashtags').value=p.hashtags||'';
   document.getElementById('f-notes').value=p.notes||'';
   document.getElementById('btn-del-post').style.display='block';
+  document.getElementById('btn-dupe-post').style.display='';
   document.getElementById('btn-save-post').textContent='Update Post';
   document.getElementById('day-posts-list').innerHTML='';
   openOverlay('overlay-post');
+}
+
+function duplicatePost(){
+  const title   = document.getElementById('f-title').value;
+  const task    = document.getElementById('f-task').value;
+  const type    = document.getElementById('f-type').value;
+  const status  = document.getElementById('f-status').value;
+  const caption = document.getElementById('f-caption').value;
+  const hashtags= document.getElementById('f-hashtags').value;
+  const notes   = document.getElementById('f-notes').value;
+
+  closePostModal();
+  requestAnimationFrame(()=>{
+    openAddModal(null);
+    document.getElementById('f-title').value    = title + ' (copy)';
+    document.getElementById('f-task').value     = task;
+    document.getElementById('f-type').value     = type;
+    document.getElementById('f-status').value   = status;
+    document.getElementById('f-caption').value  = caption;
+    document.getElementById('f-hashtags').value = hashtags;
+    document.getElementById('f-notes').value    = notes;
+    document.getElementById('m-sub').textContent = 'Pick a new date to save the duplicate';
+    document.getElementById('f-date').value     = '';
+    document.getElementById('f-date').focus();
+  });
 }
 
 function setDateInput(key){

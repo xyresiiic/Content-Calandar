@@ -16,7 +16,7 @@
   <div class="sb-top">
     <div class="sb-brand">
       <div class="sb-logo">
-        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3.5" stroke="white" stroke-width="1.3"/><circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.3"/><circle cx="12" cy="4" r="1" fill="white"/></svg>
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3.5" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="4" r="1" fill="currentColor"/></svg>
       </div>
       <div>
         <div class="sb-name">Nazrithm</div>
@@ -44,12 +44,12 @@
 
   <!-- topbar -->
   <div class="topbar">
-    <button class="sb-toggle" id="sb-toggle" onclick="toggleSidebar()" aria-label="Open menu">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </button>
     <div class="topbar-left">
+      <button class="sb-toggle" id="sb-toggle" onclick="toggleSidebar()" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
       <div class="client-badge" id="client-badge">
         <div class="client-badge-dot" id="badge-dot"></div>
         <span id="badge-name">No client</span>
@@ -60,6 +60,7 @@
         <button class="m-btn" onclick="changeMonth(-1)">&#8592;</button>
         <div class="m-label" id="m-label">April 2026</div>
         <button class="m-btn" onclick="changeMonth(1)">&#8594;</button>
+        <button class="m-today" onclick="goToToday()">Today</button>
       </div>
       <div class="view-tabs">
         <button class="v-tab active" onclick="switchView('calendar',this)">Calendar</button>
@@ -142,6 +143,7 @@
 
     <div class="modal-acts">
       <button class="m-btn-del" id="btn-del-post" style="display:none" onclick="confirmDeletePost()">Delete post</button>
+      <button class="m-btn-dupe" id="btn-dupe-post" style="display:none" onclick="duplicatePost()">Duplicate</button>
       <button class="m-btn-cancel" onclick="closePostModal()">Cancel</button>
       <button class="m-btn-save" id="btn-save-post" onclick="savePost()">Add Post</button>
     </div>

@@ -5,12 +5,12 @@ const CLIENT_COLORS=[
 ];
 
 const THEMES=[
-  {id:'dark',   cls:'',          bg:'#09090f', label:'Dark'},
-  {id:'aurora', cls:'t-aurora',  bg:'#06111e', label:'Aurora'},
-  {id:'blossom',cls:'t-blossom', bg:'#130810', label:'Blossom'},
-  {id:'jade',   cls:'t-jade',    bg:'#070f09', label:'Jade'},
-  {id:'solar',  cls:'t-solar',   bg:'#110b00', label:'Solar'},
-  {id:'pearl',  cls:'t-pearl',   bg:'#f0eefa', label:'Pearl'},
+  {id:'dark',   cls:'',          bg:'#ffffff', label:'Dark'},
+  {id:'aurora', cls:'t-aurora',  bg:'#38bdf8', label:'Aurora'},
+  {id:'blossom',cls:'t-blossom', bg:'#f472b6', label:'Blossom'},
+  {id:'jade',   cls:'t-jade',    bg:'#34d399', label:'Jade'},
+  {id:'solar',  cls:'t-solar',   bg:'#fbbf24', label:'Solar'},
+  {id:'pearl',  cls:'t-pearl',   bg:'#000000', label:'Pearl'},
 ];
 
 let db = {

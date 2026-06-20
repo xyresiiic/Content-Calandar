@@ -868,8 +868,26 @@ body{
   }
   .sb-overlay.open { display: block; }
   .sb-toggle { display: flex; }
-  .topbar { padding-left: 12px; }
+  
+  .topbar { 
+    padding-left: 12px; 
+    padding-right: 12px;
+    overflow-x: auto; 
+    white-space: nowrap; 
+  }
+  .topbar::-webkit-scrollbar { display: none; }
+  .m-label { min-width: auto; padding: 0 8px; }
+  
   .stats-grid{grid-template-columns:repeat(2,1fr);}
   .analytics-grid{grid-template-columns:1fr;}
   .r2{grid-template-columns:1fr;}
+  
+  .cal-cell { padding: 4px; min-height: 80px; gap: 2px; }
+  .post-pill { padding: 2px 4px 2px 6px; font-size: 9px; }
+  .pill-inner { gap: 4px; }
+  .day-lbl { font-size: 8px; }
+  
+  .dl-strip { flex-direction: column; align-items: stretch; text-align: center; }
+  .dl-btns { justify-content: center; flex-wrap: wrap; }
+  .modal { padding: 20px; width: 92vw; }
 }

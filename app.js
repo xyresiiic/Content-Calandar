@@ -178,7 +178,11 @@ function renderContent(){
   if (currentView === 'analytics') {
     requestAnimationFrame(() => {
       const canvas = document.getElementById('type-chart');
-      if (!canvas || !window.Chart) return;
+      if (!canvas) return;
+      if (!window.Chart) {
+        canvas.outerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:var(--tx3);text-align:center;">Chart library failed to load.<br/>Please check your connection.</div>';
+        return;
+      }
       if (canvas._chartInst) canvas._chartInst.destroy();
       const bt = { Reel:'#f07ab0', Carousel:'#f0a830', Static:'#7c6fff', Story:'#2fdba0', Collab:'#f06040' };
       const entries = Object.entries(bt);
@@ -341,10 +345,13 @@ function buildListHTML(){
     </div>`;
 
   const allPosts=[];
+  const curY = currentDate.getFullYear();
+  const curM = currentDate.getMonth();
   Object.entries(db.posts).forEach(([key,arr])=>{
     if(!key.startsWith(db.activeClient+'_')) return;
     const dateStr=key.replace(db.activeClient+'_','');
     const parts=dateStr.split('-');
+    if(parseInt(parts[0]) !== curY || parseInt(parts[1]) !== curM) return;
     const date=new Date(parseInt(parts[0]),parseInt(parts[1]),parseInt(parts[2]));
     arr.forEach((p,i)=> allPosts.push({key,idx:i,post:p,date}));
   });
@@ -553,7 +560,11 @@ function openAddModal(key){
   editingKey=key; editingIdx=null;
   document.getElementById('m-title').textContent='Add Post';
   document.getElementById('m-sub').textContent='Fill in the details below';
-  if(key) setDateInput(key); else document.getElementById('f-date').value='';
+  if(key){ setDateInput(key); } else {
+    const y=currentDate.getFullYear(), m=currentDate.getMonth(), d=new Date().getDate();
+    const validD = Math.min(d, new Date(y, m+1, 0).getDate());
+    document.getElementById('f-date').value=`${y}-${String(m+1).padStart(2,'0')}-${String(validD).padStart(2,'0')}`;
+  }
   clearForm();
   document.getElementById('btn-del-post').style.display='none';
   document.getElementById('btn-dupe-post').style.display='none';
@@ -711,10 +722,10 @@ function downloadCSV(){
     arr.forEach(p=>{
       rows.push([dateStr,dayStr,activeClientObj().name,
         p.title,p.task,p.type,
-        (p.caption||'').replace(/,/g,';'),
-        (p.hashtags||'').replace(/,/g,';'),
+        p.caption||'',
+        p.hashtags||'',
         p.status,
-        (p.notes||'').replace(/,/g,';')]);
+        p.notes||'']);
     });
   });
   const csv=rows.map(r=>r.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -749,10 +760,6 @@ function runConfirm(){ if(confirmCb){confirmCb();} closeConfirm(); }
 /* ════ OVERLAY HELPERS ══════════════════════════ */
 function openOverlay(id){ document.getElementById(id).classList.add('open'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.overlay').forEach(ov=>{
-  ov.addEventListener('click',function(e){ if(e.target===this) this.classList.remove('open'); });
-});
 
 /* ════ TOAST ════════════════════════════════════ */
 function showToast(msg){

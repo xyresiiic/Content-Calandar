@@ -33,10 +33,10 @@
     Add client
   </button>
 
-  <div class="sb-themes">
-    <div class="sb-section" style="padding:0;margin-bottom:8px;">Theme</div>
-    <div class="theme-row" id="theme-row"></div>
-  </div>
+  <button class="sb-settings-btn" onclick="openSettingsModal()" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    Settings
+  </button>
 </div>
 
 <!-- ══ MAIN ══════════════════════════════════ -->
@@ -183,6 +183,45 @@
   </div>
 </div>
 
+<div class="overlay" id="overlay-settings">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-ttl">Settings</div>
+        <div class="modal-sub">App preferences & data</div>
+      </div>
+      <button class="x-btn" onclick="closeSettingsModal()">&#215;</button>
+    </div>
+    
+    <div class="settings-section">
+      <div class="s-label">Theme</div>
+      <div class="theme-row" id="theme-row"></div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="s-label">Data Management</div>
+      <div class="s-row">
+        <span>Backup your entire workspace.</span>
+        <button class="m-btn-save" onclick="exportDataJSON()" style="padding:6px 14px;font-size:11px;">Export JSON</button>
+      </div>
+      <div class="s-row">
+        <span>Restore from a backup.</span>
+        <button class="m-btn-save" onclick="document.getElementById('import-file').click()" style="padding:6px 14px;font-size:11px;">Import JSON</button>
+        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importDataJSON(event)"/>
+      </div>
+    </div>
+
+    <div class="settings-section" style="border-bottom:none;margin-bottom:0;">
+      <div class="s-label" style="color:var(--red);">Danger Zone</div>
+      <div class="s-row">
+        <span style="color:var(--tx2);">Permanently wipe all local data.</span>
+        <button class="m-btn-del" onclick="wipeAllData()" style="padding:6px 14px;font-size:11px;">Wipe Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="app.js"></script>

@@ -73,12 +73,13 @@ function init(){
     }
   });
 
-  ['overlay-post','overlay-confirm','overlay-client'].forEach(id => {
+  ['overlay-post','overlay-confirm','overlay-client','overlay-settings'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e){
       if(e.target === this){
         if(id === 'overlay-post')    closePostModal();
         if(id === 'overlay-confirm') closeConfirm();
         if(id === 'overlay-client')  closeClientModal();
+        if(id === 'overlay-settings') closeSettingsModal();
       }
     });
   });
@@ -756,6 +757,49 @@ function showConfirm(title,msg,cb){
 }
 function closeConfirm(){ closeOverlay('overlay-confirm'); confirmCb=null; }
 function runConfirm(){ if(confirmCb){confirmCb();} closeConfirm(); }
+
+/* ════ SETTINGS MODAL ════════════════════════════ */
+function openSettingsModal(){ openOverlay('overlay-settings'); }
+function closeSettingsModal(){ closeOverlay('overlay-settings'); }
+
+function exportDataJSON(){
+  const dataStr = JSON.stringify(db, null, 2);
+  triggerDownload(dataStr, 'application/json', 'nazrithm-backup.json');
+}
+
+function importDataJSON(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const importedDb = JSON.parse(event.target.result);
+      if(importedDb && importedDb.clients && importedDb.posts){
+        db = importedDb;
+        saveDB();
+        applyTheme(db.theme, false);
+        renderThemes();
+        renderClients();
+        renderAll();
+        showToast('Data imported successfully');
+        closeSettingsModal();
+      } else {
+        alert("Invalid backup file format.");
+      }
+    } catch(err){
+      alert("Error parsing JSON file.");
+    }
+    e.target.value = ''; // reset
+  };
+  reader.readAsText(file);
+}
+
+function wipeAllData(){
+  showConfirm("Wipe All Data", "Are you sure you want to permanently delete ALL clients and posts? This cannot be undone.", () => {
+    localStorage.removeItem('nz_db');
+    location.reload();
+  });
+}
 
 /* ════ OVERLAY HELPERS ══════════════════════════ */
 function openOverlay(id){ document.getElementById(id).classList.add('open'); }

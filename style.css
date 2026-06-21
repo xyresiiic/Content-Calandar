@@ -418,16 +418,16 @@ body{
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
 .cal-cell{
   background:var(--sur);
-  border:1px solid var(--bdr);
+  border:2px solid var(--bdr2);
   border-radius:var(--radius);
   min-height:114px;
   padding:11px 10px;cursor:pointer;
-  transition:border-color .15s,background .15s,transform .12s;
+  transition:border-color .15s,background .15s,transform .12s,box-shadow .15s;
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;gap:5px;
 }
 .cal-cell:hover{
-  border-color:var(--bdr2);
+  border-color:var(--bdr3);
   background:var(--sur2);
   transform:translateY(-1px);
 }
